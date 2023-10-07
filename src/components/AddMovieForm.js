@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { addMovie } from './../actions/movieActions';
 import { connect } from 'react-redux';
+import { addMovie } from './../actions/movieActions';
 
 import { Link, useHistory } from 'react-router-dom';
 
@@ -23,8 +23,16 @@ const AddMovieForm = (props) => {
     }
 
     const handleSubmit = (e) => {
-    }
-
+        e.preventDefault();
+        const maxId = Math.max(...props.movies.map(m => m.id));
+        const newMovie = {
+            ...movie,
+            id: maxId + 1
+        };
+        props.addMovie(newMovie);
+        push('/movies');
+    };
+    
     const { title, director, genre, metascore, description } = movie;
     return(<div className="col">
         <div className="modal-dialog">
@@ -66,5 +74,16 @@ const AddMovieForm = (props) => {
         </div>
     </div>);
 }
+const mapStateToProps = (state) => {
+    return {
+        movies: state.movies.movies
+    };
+}
 
-export default AddMovieForm;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addMovie: (movie) => dispatch(addMovie(movie))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddMovieForm);
